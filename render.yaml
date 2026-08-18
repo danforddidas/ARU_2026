@@ -1,0 +1,56 @@
+services:
+  - type: web
+    name: aru-student-project-api
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    preDeployCommand: "python manage.py migrate"
+    healthCheckPath: "/api/projects/"
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+
+      - key: DEBUG
+        value: "False"
+
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aru-student-project-db
+          property: connectionString
+
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: aru-student-project-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+
+      - key: CSRF_TRUSTED_ORIGINS
+        fromService:
+          type: web
+          name: aru-student-project-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: web
+    name: aru-student-project-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: "./build.sh"
+    staticPublishPath: "."
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: aru-student-project-api
+          envVarKey: RENDER_EXTERNAL_URL
+
+databases:
+  - name: aru-student-project-db
+    plan: free
+    region: singapore
