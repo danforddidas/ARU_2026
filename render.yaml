@@ -7,7 +7,17 @@ services:
     rootDir: backend
     buildCommand: "./build.sh"
     startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
-    preDeployCommand: "python manage.py migrate"
+    services:
+  - type: web
+    name: aru-student-project-api
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    healthCheckPath: "/api/projects/"
+    autoDeployTrigger: commit
     healthCheckPath: "/api/projects/"
     autoDeployTrigger: commit
 
