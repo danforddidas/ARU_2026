@@ -1,4 +1,4 @@
-const API=(window.APP_CONFIG?.API_BASE_URL||"http://127.0.0.1:8000/api").replace(/\/$/,"");let token=localStorage.getItem("aru_token")||"",user=JSON.parse(localStorage.getItem("aru_user")||"null"),role="STUDENT";
+const API=(window.APP_CONFIG?.API_BASE_URL||"https://aru-student-project-api.onrender.com/api").replace(/\/$/,"");let token=localStorage.getItem("aru_token")||"",user=JSON.parse(localStorage.getItem("aru_user")||"null"),role="STUDENT";
 const $=id=>document.getElementById(id);const headers=(body=true)=>{let h={};if(body)h["Content-Type"]="application/json";if(token)h.Authorization=`Token ${token}`;return h};
 async function api(path,opt={}){let r=await fetch(API+path,{...opt,headers:{...headers(opt.body!==undefined),...(opt.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||d.message||JSON.stringify(d));return d}
 function screen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id)?.classList.add("active");window.scrollTo(0,0);if(id==="dashboard")dashboard();if(id==="projects")projects();if(id==="submit")projectFormData()}
